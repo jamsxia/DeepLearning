@@ -1,5 +1,5 @@
 
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 from torchvision.transforms import ToTensor
 import torch
@@ -8,7 +8,7 @@ import torch.nn as nn
 from mlp_train import train
 from mlp_test import test
 
-# For reproducability
+# For reproducibility
 torch.manual_seed(0)
 class BaseClassifier(nn.Module):
   def __init__(self, in_dim, feature_dim, out_dim):
@@ -26,7 +26,7 @@ class BaseClassifier(nn.Module):
 in_dim, feature_dim, out_dim = 784, 256, 10
 lr=1e-3
 loss_fn = nn.CrossEntropyLoss()
-epochs=60
+epochs=5
 classifier = BaseClassifier(in_dim, feature_dim, out_dim)
 optimizer = optim.SGD(classifier.parameters(), lr=lr)
 
@@ -47,4 +47,5 @@ test_loader = DataLoader(test_dataset,
 
 train(train_loader,classifier,optimizer,epochs,loss_fn,lr)
 out=BaseClassifier(in_dim, feature_dim, out_dim)
-test(test_loader, classifier, loss_fn,out)
+out.load_state_dict(torch.load('mnist.pt'))
+test(test_loader, out, loss_fn)
